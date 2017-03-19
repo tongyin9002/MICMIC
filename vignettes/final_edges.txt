@@ -1,0 +1,9 @@
+V1	V2
+1	y	x
+2	w	y
+3	v	y
+4	z	y
+5	z	w
+6	z	v
+7	b	a
+8	c	b
