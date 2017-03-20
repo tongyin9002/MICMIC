@@ -28,9 +28,13 @@ Maintainer: Y.Tong, J. Zhang tongyin9002@gmail.com
 
 To install MICMIC from GitHub you need devtools package:
 
-Install devtools
-install.packages("devtools")
-Install MICMIC
-devtools::install_github("tongyin9002/MICMIC")
-library(MICMICC)
+To install devtools:
+
+> install.packages("devtools")
+
+To install MICMIC:
+
+> devtools::install_github("tongyin9002/MICMIC")
+
+> library(MICMICC)
 
