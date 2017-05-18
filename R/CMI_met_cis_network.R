@@ -85,6 +85,7 @@
 
 
 
+
 CMI_met_cis_network<-function(met_data_matrix,exp_data_matrix,gene_list,distance=300000,ref_gene_bed,ref_CpGs_bed,outfiledir=NA,pvalue_cut=0.001,core_num=1,permutation_times=100)
 {
     options(stringsAsFactors = FALSE)
