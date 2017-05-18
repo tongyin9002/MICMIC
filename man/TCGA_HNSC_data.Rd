@@ -20,6 +20,8 @@
 \usage{
 data(TCGA_HNSC_data)
 
+HNSC_met_data_matrix
+
 HNSC_exp_data_matrix
 
 HNSC_control_id
@@ -31,9 +33,6 @@ HNSC_ref_gene_bed
 HNSC_ref_CpGs_bed
 
 HNSC_sample_class
-}
-\value{
-The methylation beta matrix, and expression log2 matrix
 }
 \description{
 methylation and expression data from TCGA HNSC dataset

@@ -1,14 +1,12 @@
 #' methylation and expression data from TCGA HNSC dataset
-#'
 #' @docType data
 #' @keywords datasets
 #' @name TCGA_HNSC_data
 #' @usage data(TCGA_HNSC_data)
 #' @format matrix, data.frame
-#' @return The methylation beta matrix, and expression log2 matrix
 #' @source \url{http://cancergenome.nih.gov/}
-#' @references
-#' Cancer Genome Atlas Research Network. "Comprehensive molecular characterization of gastric adenocarcinoma." Nature 513.7517 (2014): 202-209.
+#' @references Cancer Genome Atlas Research Network. "Comprehensive molecular characterization of gastric adenocarcinoma." Nature 513.7517 (2014): 202-209.
+NULL
 
 
 #' @docType data
