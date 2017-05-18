@@ -37,8 +37,8 @@ This function is to infer the cis-acting regulatory network between DNA methylat
 }
 \examples{
 #library(MICMIC)
-#library(SummarizedExperiment)
-#library(GenomicRanges)
+library(SummarizedExperiment)
+library(GenomicRanges)
 data("TCGA_STAD_data")
 gene_name<-"MLH1"
 

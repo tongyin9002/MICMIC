@@ -2,7 +2,7 @@ Package: MICMIC
 Type: Package
 Title: Methylation regulation network inference with Conditional Mutual
     information based PC-algorithem
-Version: 0.99.2
+Version: 0.99.3
 Author: Tong Yin
 biocViews: GeneRegulation, DNAMethylation, NetworkInference, Network
 Maintainer: Tong Yin <tongyin9002@gmail.com>
