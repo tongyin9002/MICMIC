@@ -42,3 +42,8 @@ To install MICMIC:
 
 > library(MICMICC)
 
+To install MICMIC from Bioconductor
+
+> source("http://bioconductor.org/biocLite.R")
+> biocLite("MICMIC")
+
