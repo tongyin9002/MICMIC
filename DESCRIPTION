@@ -4,7 +4,7 @@ Title: Methylation regulation network inference with Conditional Mutual
     information based PC-algorithem
 Version: 0.99.0
 Author: Tong Yin
-biocViews: GeneRegulation
+biocViews: GeneRegulation, DNAMethylation, NetworkInference, Network
 Maintainer: Tong Yin <tongyin9002@gmail.com>
 Description: MICMIC is an information theory based package to infer the
     methylation involved regulation network. It contains some tools to 1. measure
@@ -21,8 +21,10 @@ Imports:
     methods,
     stats,
     utils,
-    cubature
+    cubature,
+    SummarizedExperiment,
+    GenomicRanges
 RoxygenNote: 6.0.1
-Suggests: knitr,
+Suggests: knitr,RUnit,BiocGenerics,
     rmarkdown
 VignetteBuilder: knitr

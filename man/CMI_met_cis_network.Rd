@@ -8,17 +8,17 @@ CMI_met_cis_network(met_data_matrix,exp_data_matrix,gene_list,distance=300000,
 ref_gene_bed,ref_CpGs_bed,outfiledir=NA,pvalue_cut=0.001,core_num=1,permutation_times=100)
 }
 \arguments{
-\item{met_data_matrix}{a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)}
+\item{met_data_matrix}{a SummarizedExperiment object or a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)}
 
-\item{exp_data_matrix}{a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)}
+\item{exp_data_matrix}{a SummarizedExperiment object or a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)}
 
 \item{gene_list}{a vector containing the names of target genes}
 
 \item{distance}{integer specifying the upstream/downstream genome range to be analyzed}
 
-\item{ref_gene_bed}{a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
+\item{ref_gene_bed}{a GRanges object or a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
 
-\item{ref_CpGs_bed}{a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
+\item{ref_CpGs_bed}{a GRanges object or a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
 
 \item{outfiledir}{a string of file directory to store the result files. If the parameter is not specified, the log file directory will be get by \code{getwd()}.}
 
@@ -36,14 +36,59 @@ And 0 means there is no edge.
 This function is to infer the cis-acting regulatory network between DNA methylation and gene expression
 }
 \examples{
+#library(MICMIC)
+#library(SummarizedExperiment)
+#library(GenomicRanges)
 data("TCGA_STAD_data")
 gene_name<-"MLH1"
-\dontrun{
-network<-CMI_met_cis_network(met_data_matrix=STAD_met_data_matrix,
-exp_data_matrix=STAD_exp_data_matrix,gene_list=gene_name,distance=300000,
-ref_gene_bed=STAD_ref_gene_bed,ref_CpGs_bed=STAD_ref_CpGs_bed,pvalue_cut=0.00001,
-permutation_times=20)
-}
+
+####prepare the data matrix#####
+colData<-DataFrame(sample_stages=STAD_sample_class[colnames(STAD_met_data_matrix),"stage"],
+row.names=colnames(STAD_met_data_matrix))
+STAD_met_data_SE <- SummarizedExperiment(assays=SimpleList(counts=STAD_met_data_matrix),
+                                         colData=colData)
+STAD_exp_data_SE <- SummarizedExperiment(assays=SimpleList(counts=STAD_exp_data_matrix),
+                                         colData=colData)
+STAD_ref_gene_bed_GR <-  GRanges(seqnames = Rle(STAD_ref_gene_bed[,"chr"]),
+                                 ranges = IRanges(STAD_ref_gene_bed[,"start"],
+                                 end=STAD_ref_gene_bed[,"end"],
+                                 names = STAD_ref_gene_bed[,"name"]),
+                                 strand = Rle(STAD_ref_gene_bed[,"strand"])
+)
+STAD_ref_CpGs_bed_GR <-  GRanges(seqnames = Rle(STAD_ref_CpGs_bed[,"chr"]),
+                                 ranges = IRanges(STAD_ref_CpGs_bed[,"start"],
+                                 end=STAD_ref_CpGs_bed[,"end"],
+                                 names = STAD_ref_CpGs_bed[,"name"])
+)
+STAD_met_data_SE
+STAD_exp_data_SE
+STAD_ref_gene_bed_GR
+STAD_ref_CpGs_bed_GR
+
+####infer the cis-acting methylation regulatory network
+network<-CMI_met_cis_network(met_data_matrix=STAD_met_data_SE,
+exp_data_matrix=STAD_exp_data_SE,
+gene_list=gene_name,distance=300000,ref_gene_bed=STAD_ref_gene_bed_GR,
+ref_CpGs_bed=STAD_ref_CpGs_bed_GR,outfiledir=tempdir(),
+pvalue_cut=0.0001,core_num=1)
+
+network
+
+####generate the regulator information table####
+result<-generate_regulator_info(met_data_matrix=STAD_met_data_SE,
+exp_data_matrix=STAD_exp_data_SE,gene_list=gene_name,outfiledir=tempdir(),
+ref_gene_bed=STAD_ref_gene_bed_GR,ref_CpGs_bed=STAD_ref_CpGs_bed_GR)
+
+result
+
+####plotting the cis-acting regulatory network####
+
+MICMIC_plotting(gene_name=gene_name,met_data_matrix=STAD_met_data_SE,
+exp_data_matrix=STAD_exp_data_SE,control_id=STAD_control_id,
+distance=300000,ref_gene_bed=STAD_ref_gene_bed_GR,
+ref_CpGs_bed=STAD_ref_CpGs_bed_GR,sample_class=STAD_sample_class,outfiledir=tempdir())
+
+####done####
 }
 \author{
 Tong Yin

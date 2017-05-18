@@ -31,3 +31,4 @@ This function is to get the neighbour elements on genome for target gene
 \author{
 Tong Yin
 }
+\keyword{internal}

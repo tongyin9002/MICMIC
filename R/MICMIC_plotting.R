@@ -6,12 +6,12 @@
 #'
 #' This function is to map genome coordinates to plotting coordinates, and enlarge target gene promoter and gene body
 #' @param gene_name The name of target gene to be plotted
-#' @param met_data_matrix a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)
-#' @param exp_data_matrix a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)
+#' @param met_data_matrix a SummarizedExperiment object or a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)
+#' @param exp_data_matrix a SummarizedExperiment object or a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)
 #' @param control_id a vector containing the ids of control/normal samples
 #' @param distance Integer specifying the upstream/downstream genome range to be plotted. By default distance will cover all CpGs in analysis result
-#' @param ref_gene_bed a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.
-#' @param ref_CpGs_bed a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.
+#' @param ref_gene_bed a GRanges object or a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.
+#' @param ref_CpGs_bed a GRanges object or a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.
 #' @param sample_class a data.frame containing the class information for samples
 #' @param outfiledir a string of file directory to store the result files. If the parameter is not specified, the log file directory will be get by \code{getwd()}.
 #' @usage MICMIC_plotting(gene_name,met_data_matrix,exp_data_matrix,control_id,
@@ -30,10 +30,11 @@
 #' distance=350000,ref_gene_bed=STAD_ref_gene_bed,
 #' ref_CpGs_bed=STAD_ref_CpGs_bed,sample_class=sample_class)
 #' }
+#' @seealso the usage of CMI_met_cis_network
 
 
 
-MICMIC_plotting<-function(gene_name,met_data_matrix,exp_data_matrix,control_id,distance=NA,ref_gene_bed,ref_CpGs_bed,sample_class,outfiledir=NA)
+MICMIC_plotting<-function(gene_name,met_data_matrix,exp_data_matrix,control_id=NA,distance=NA,ref_gene_bed,ref_CpGs_bed,sample_class,outfiledir=NA)
 {
     options(stringsAsFactors = FALSE)
 
@@ -41,6 +42,39 @@ MICMIC_plotting<-function(gene_name,met_data_matrix,exp_data_matrix,control_id,d
     {
         outfiledir<-getwd()
     }
+
+    if(class(met_data_matrix)=="SummarizedExperiment")
+    {
+        met_data_matrix<-assay(met_data_matrix)
+    }
+
+    if(class(exp_data_matrix)=="SummarizedExperiment")
+    {
+        exp_data_matrix<-assay(exp_data_matrix)
+    }
+
+    if(class(ref_gene_bed)=="GRanges")
+    {
+        ref_gene_bed<-data.frame(as.vector(seqnames(ref_gene_bed)),
+                                 start(ranges(ref_gene_bed)),
+                                 end(ranges(ref_gene_bed)),
+                                 as.vector(strand(ref_gene_bed)),
+                                 names(ref_gene_bed),
+                                 width(ranges(ref_gene_bed)))
+        colnames(ref_gene_bed)<-c("chr","start","end","strand","name","length")
+        rownames(ref_gene_bed)<-ref_gene_bed[,"name"]
+    }
+    if(class(ref_CpGs_bed)=="GRanges")
+    {
+        ref_CpGs_bed<-data.frame(names(ref_CpGs_bed),
+                                 as.vector(seqnames(ref_CpGs_bed)),
+                                 start(ranges(ref_CpGs_bed)),
+                                 end(ranges(ref_CpGs_bed))
+        )
+        colnames(ref_CpGs_bed)<-c("name","chr","start","end")
+        rownames(ref_CpGs_bed)<-ref_CpGs_bed[,"name"]
+    }
+
 
     MI_net<-read.table(paste(outfiledir,"/",gene_name,"_MI_network.txt",sep=""),sep="\t")
     CMI_net<-read.table(paste(outfiledir,"/",gene_name,"_CMI_network.txt",sep=""),sep="\t")
@@ -155,7 +189,6 @@ MICMIC_plotting<-function(gene_name,met_data_matrix,exp_data_matrix,control_id,d
     }
 
     outfilename<-paste(outfiledir,"/",gene_name,"_met_regulation.pdf",sep="")
-    plot_result
     ggsave(plot_result,filename=outfilename,width=48,height=20+2*nrow(layout),dpi=450,limitsize = FALSE)
 
     return(plot_result)

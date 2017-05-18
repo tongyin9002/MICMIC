@@ -8,17 +8,17 @@ generate_regulator_info(met_data_matrix,exp_data_matrix,gene_list,
 outfiledir=NA,ref_gene_bed,ref_CpGs_bed)
 }
 \arguments{
-\item{met_data_matrix}{a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)}
+\item{met_data_matrix}{a SummarizedExperiment object or a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)}
 
-\item{exp_data_matrix}{a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)}
+\item{exp_data_matrix}{a SummarizedExperiment object or a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)}
 
 \item{gene_list}{a vector containing the names of target genes}
 
 \item{outfiledir}{a string of file directory to store the result files. If the parameter is not specified, the log file directory will be get by \code{getwd()}.}
 
-\item{ref_gene_bed}{a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
+\item{ref_gene_bed}{a GRanges object or a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
 
-\item{ref_CpGs_bed}{a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
+\item{ref_CpGs_bed}{a GRanges object or a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
 }
 \value{
 data.frame containing information of direct and indirect regulators
@@ -35,6 +35,9 @@ generate_regulator_info(met_data_matrix=STAD_met_data_matrix,
 exp_data_matrix=STAD_exp_data_matrix,gene_list=gene_name,
 ref_gene_bed=STAD_ref_gene_bed,ref_CpGs_bed=STAD_ref_CpGs_bed)
 }
+}
+\seealso{
+the usage of CMI_met_cis_network
 }
 \author{
 Tong Yin

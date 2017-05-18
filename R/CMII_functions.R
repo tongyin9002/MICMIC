@@ -126,31 +126,22 @@ entropy<-function(X,Y=NULL,method=c("covariance","density"),unit=c("bits","nats"
     unit <- match.arg(unit)
     variable <- match.arg(variable)
 
-
-    if(length(Y)==0)
-    {
      if(method == "covariance")
      {
         entropy<-entropy.ZhangXJ(X=X,Y=Y,unit=unit)
      }
+
      if(method == "density")
      {
+       if(length(Y)==0)
+       {
         oneD_den_func_A<-oneD_kernel_density(X)
         entropy<-continuous_entropy(oneD_den_func_A,min(X),max(X),n=500,unit=unit)
-     }
-    }
-
-    if(length(Y)>0)
-    {
-        if(method == "covariance")
-        {
-            entropy<-entropy.ZhangXJ(X=X,Y=Y,unit=unit)
-        }
-        if(method == "density")
-        {
-            twoD_den_func<-twoD_kernel_density(X,Y)
-            entropy<-continuous_joint_entropy(twoD_den_func,lowerLimit<-c(min(X),min(Y)),upperLimit<-c(max(X),max(Y)),method="twoD_entropy")
-        }
+       }else
+       {
+         twoD_den_func<-twoD_kernel_density(X,Y)
+         entropy<-continuous_joint_entropy(twoD_den_func,lowerLimit<-c(min(X),min(Y)),upperLimit<-c(max(X),max(Y)),method="twoD_entropy")
+       }
     }
 
     return(entropy)
@@ -248,7 +239,7 @@ MI.ZhangXJ<-function(X,Y,unit=c("bits","nats","hartley","normalized"),pvalue=FAL
   {
 
     total<-permutation_times
-    mat<-cbind(1:total,1:total)
+    mat<-cbind(seq_len(total),seq_len(total))
     MIs<-apply(mat,1,function(x){MI.ZhangXJ(sample(X),sample(Y),unit="normalized")})
 
     ####test by permutation
@@ -325,7 +316,7 @@ MI.KDE<-function(series_A,series_B,unit=c("bits","nats","hartley","normalized"),
   {
 
     MI<-0
-    for(i in 1:sample_number)
+    for(i in seq_len(sample_number))
     {
       fa<-oneD_den_func_A(series_A[i])
       fb<-oneD_den_func_B(series_B[i])
@@ -543,7 +534,7 @@ CMI.ZhangXJ<-function(X,Y,Z,unit=c("bits","nats","hartley","normalized"),pvalue=
     sample_size<-length(X)
 
     total<-permutation_times
-    mat<-cbind(1:total,1:total)
+    mat<-cbind(seq_len(total),seq_len(total))
     CMIs<-apply(mat,1,function(x){CMI.ZhangXJ(sample(X),Y,Z,unit="normalized")})
 
     ####test by permutation

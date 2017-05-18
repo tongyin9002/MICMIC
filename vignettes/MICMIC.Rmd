@@ -25,7 +25,7 @@ The major feature of MICMIC is to infer the methylation involved regulation netw
 
 ### Data preparation
 
-The `CMI_met_cis_network` function requires user to provide 1. The methylation data matrix with sample names in columns and probes (CpGs/CGIs) names in rows; 2. The expression data with sample names in columns and probe(genes) names in rows; 3. The target gene names (one gene name or list of genes); 4. The range of upstream and downstream genome to be analyzed; 5. Reference coordinates data of genes in five columns named "name", "chr", "start", "end", "strand"; 6. Reference coordinates data of methylation sites(CpGs/CGIs) in four columns names "name", "chr", "start", "end", "strand"; 7. A directory to save the intermediate files and outputs.
+The `CMI_met_cis_network` function requires user to provide 1. A SummarizedExperiment object or a numeric matrix containing the methylation data with sample names in columns and probes (CpGs/CGIs) names in rows; 2. A SummarizedExperiment object or a numeric matrix containing the expression data with sample names in columns and probe(genes) names in rows; 3. The target gene names (one gene name or list of genes); 4. The range of upstream and downstream genome to be analyzed; 5. Reference coordinates data of genes in five columns named "name", "chr", "start", "end", "strand", in a GRanges object or a data.frame; 6. Reference coordinates data of methylation sites(CpGs/CGIs) in four columns names "name", "chr", "start", "end", in a GRanges object or a data.frame; 7. A directory to save the intermediate files and outputs.
 
 We have already prepare two example datasets from TCGA. People can load the example data by `data("TCGA_HNSC_data")` and `data("TCGA_STAD_data")`. In this two datasets, we include expression data matrix and methylation data matrix for a limited number of genes and CpGs. Also, the bed format coordinates information are saved in the data.frame `ref_gene_bed` and `ref_CpGs_bed`.
 
@@ -41,31 +41,55 @@ In the beginning, we can try to analyze the methylation regulation network for M
 
 In this example, we use the data matrix from TCGA-STAD dataset to analyze the methylation regulation of MLH1, a well known tumor suppressor of gastric cancer. We designate the directory for result files and specify the "MLH1" as the target gene name. Then we run the program:
 
-```{r, fig.show='hold', eval = FALSE}
-gene_name="MLH1"
-network<-CMI_met_cis_network(met_data_matrix=STAD_met_data_matrix,
-                             exp_data_matrix=STAD_exp_data_matrix,
+```{r, fig.show='hold', eval = TRUE}
+
+library(MICMIC)
+library(SummarizedExperiment)
+library(GenomicRanges)
+
+data("TCGA_STAD_data")
+gene_name<-"MLH1"
+
+######prepare the data################
+colData<-DataFrame(sample_stages=STAD_sample_class[colnames(STAD_met_data_matrix),"stage"],row.names=colnames(STAD_met_data_matrix))
+STAD_met_data_SE <- SummarizedExperiment(assays=SimpleList(counts=STAD_met_data_matrix),
+                                       colData=colData)
+STAD_exp_data_SE <- SummarizedExperiment(assays=SimpleList(counts=STAD_exp_data_matrix),
+                                         colData=colData)
+
+
+STAD_ref_gene_bed_GR <-  GRanges(seqnames = Rle(STAD_ref_gene_bed[,"chr"]),
+                       ranges = IRanges(STAD_ref_gene_bed[,"start"], end=STAD_ref_gene_bed[,"end"], 
+                                        names = STAD_ref_gene_bed[,"name"]),
+                       strand = Rle(STAD_ref_gene_bed[,"strand"])
+)
+
+STAD_ref_CpGs_bed_GR <-  GRanges(seqnames = Rle(STAD_ref_CpGs_bed[,"chr"]),
+                                 ranges = IRanges(STAD_ref_CpGs_bed[,"start"], end=STAD_ref_CpGs_bed[,"end"], 
+                                                  names = STAD_ref_CpGs_bed[,"name"])
+)
+
+####infer the cis-acting methylation regulatory network
+CMI_met_cis_network(met_data_matrix=STAD_met_data_matrix,exp_data_matrix=STAD_exp_data_matrix,
                              gene_list=gene_name,distance=300000,ref_gene_bed=STAD_ref_gene_bed,
-                             ref_CpGs_bed=STAD_ref_CpGs_bed,outfiledir=getwd(),
+                             ref_CpGs_bed=STAD_ref_CpGs_bed,outfiledir=tempdir(),
                              pvalue_cut=0.0001,core_num=1)
-network[1:10,1:10]
+
 ```
 
 When the function is running, the MICMIC will show many information on the terminal to report the progress. It will tell users how many CpGs and genes are correlated with the target gene expression (p value from cor.test(Pearson) < 0.01), and then these correlation relationship will be tested in the CMI network construction progress.In the result it will report the number of direct correlation and indirect correlation in the network.
 
 The CMI_met_cis_network function will return the final adjacent matrix, and generate 6 result files in the output directory. The result files contain the information of correaltions, direct and indirect regulations, MI and CMI network matrix. All of these files are prefixed with target gene names. 
 
-The associate regulation file give a list of all the associated genes and CpGs within the given range on genome. And the direct and indirect regulation file give the lists of direct and indirect regulators identified by MICMIC. More, the indirect regulation file will show the passenger mediating the indirect connection, which can be found in the third column. The MI and CMI network files contain the adjacent matrix after mutual information testing and conditional mutual information testing. At last, MICMIC will give two Gviz format files which can be imported by Gviz package and do the result visualization.
-
+The associate regulation file give a list of all the associated genes and CpGs within the given range on genome. And the direct and indirect regulation file give the lists of direct and indirect regulators identified by MICMIC. The indirect regulation file will show the passenger mediating the indirect connection, which can be found in the third column. The MI and CMI network files contain the adjacent matrix after mutual information testing and conditional mutual information testing.
 
 Finally we can use the `generate_regulator_info` function to integrate all vital information in the result table: 
 ```{r, fig.show='hold', eval = TRUE}
+####plotting the cis-acting regulatory network####
 gene_name="MLH1"
-result<-generate_regulator_info(met_data_matrix=STAD_met_data_matrix,
-                                exp_data_matrix=STAD_exp_data_matrix,
-                                gene_list=gene_name,outfiledir=getwd(),
-                                ref_gene_bed=STAD_ref_gene_bed,ref_CpGs_bed=STAD_ref_CpGs_bed
-                                )
+result<-generate_regulator_info(met_data_matrix=STAD_met_data_SE,exp_data_matrix=STAD_exp_data_SE,
+                                gene_list=gene_name,ref_gene_bed=STAD_ref_gene_bed_GR,
+                                ref_CpGs_bed=STAD_ref_CpGs_bed_GR,outfiledir=tempdir())
 head(result)
 ```
 
@@ -78,12 +102,12 @@ MICMIC has already provided a plotting function, MICMIC_plotting , to visualize 
 For example, we can use the following code to generate the methylation regulation results of MLH1 and to plot the figure by MICMIC_plotting.
 
 ```{r, fig.show=FALSE, eval = FALSE, results = "hide"}
-gene_name="MLH1"
-MICMIC_plotting(gene_name=gene_name,met_data_matrix=STAD_met_data_matrix,
-                exp_data_matrix=STAD_exp_data_matrix,
-                control_id=STAD_control_id,distance=400000,ref_gene_bed=STAD_ref_gene_bed,
-                ref_CpGs_bed=STAD_ref_CpGs_bed,sample_class=STAD_sample_class,
-                outfiledir=getwd())
+####plot the cis-acting regulatory network####
+MICMIC_plotting(gene_name=gene_name,met_data_matrix=STAD_met_data_SE,exp_data_matrix=STAD_exp_data_SE,
+                distance=300000,
+                ref_gene_bed=STAD_ref_gene_bed_GR,ref_CpGs_bed=STAD_ref_CpGs_bed_GR,
+                sample_class=STAD_sample_class,outfiledir=tempdir())
+
 
 ```
 
@@ -170,7 +194,7 @@ a=rnorm(100,mean=20,sd=5)
 b=0.9*a+rnorm(100,mean=2,sd=1)
 c=b-rnorm(100,mean=0,sd=3)
 mydata<-rbind(x,y,w,v,z,a,b,c)
-MI_PC_net<-PC_para(mydata,max_L=0,pre_adj=NULL,log_file_dir=getwd(),
+MI_PC_net<-PC_para(mydata,max_L=0,pre_adj=NULL,log_file_dir=tempdir(),
                    edgemode="pvalue",pvalue_cut=0.001,core_num=1)
 MI_PC_net
 ```
@@ -178,7 +202,7 @@ MI_PC_net
 There are several false positve edges in the network inference result. In order to improve the specificity of network inference, we can set the parameter "max_L" (the order of PC algorithm) to 1 to run the PC network construction by MI and CMI testing. The parameter `pre_adj` supports the user to input the pre-defined edges in the network with an adjacent matrix.
 
 ```{r, fig.show='hold'}
-CMI_PC_net<-PC_para(mydata,max_L=1,method="CMII",pre_adj=NULL,log_file_dir=getwd(),
+CMI_PC_net<-PC_para(mydata,max_L=1,method="CMII",pre_adj=NULL,log_file_dir=tempdir(),
                     edgemode="pvalue",pvalue_cut=0.001,core_num=1)
 CMI_PC_net
 ```

@@ -26,8 +26,8 @@
 #' b=0.9*a+rnorm(300,mean=2,sd=1)
 #' c=b-rnorm(300,mean=0,sd=2)
 #' mydata<-rbind(x,y,w,v,z,a,b,c)
-#' MI_PC_net<-PC_para(mydata,max_L=0)
-#' CMI_PC_net<-PC_para(mydata,max_L=1)
+#' MI_PC_net<-PC_para(mydata,max_L=0,log_file_dir=tempdir())
+#' CMI_PC_net<-PC_para(mydata,max_L=1,log_file_dir=tempdir())
 #' @author Tong Yin
 #' @references
 #' Zhang, X. (2011). Inferring gene regulatory networkds from gene expression data by path consistency algorithm based on conditional mutual information
@@ -222,13 +222,13 @@ PC_one_run_para_L1<-function(data_matrix,mynet,L,method=c("CMII","CMI"),log_file
 
   L1edges<-mynet@edges
 
-  sharing_partners<-mclapply(1:nrow(L1edges),function(x){get_sharing_partners(mynet,L1edges[x,1],L1edges[x,2])},mc.cores = core_num)
+  sharing_partners<-mclapply(seq_len(nrow(L1edges)),function(x){get_sharing_partners(mynet,L1edges[x,1],L1edges[x,2])},mc.cores = core_num)
 
-  sharing_if<-sapply(1:nrow(L1edges),function(x){!is.na(sharing_partners[[x]][1])})
+  sharing_if<-sapply(seq_len(nrow(L1edges)),function(x){!is.na(sharing_partners[[x]][1])})
   L1_edges_num<-sum(as.numeric(sharing_if))
 
-  NodeA<- unlist(lapply(1:nrow(L1edges),function(x){if(sharing_if[x]){rep(L1edges[x,1],length(sharing_partners[[x]]))}}))
-  NodeB<- unlist(lapply(1:nrow(L1edges),function(x){if(sharing_if[x]){rep(L1edges[x,2],length(sharing_partners[[x]]))}}))
+  NodeA<- unlist(lapply(seq_len(nrow(L1edges)),function(x){if(sharing_if[x]){rep(L1edges[x,1],length(sharing_partners[[x]]))}}))
+  NodeB<- unlist(lapply(seq_len(nrow(L1edges)),function(x){if(sharing_if[x]){rep(L1edges[x,2],length(sharing_partners[[x]]))}}))
   condition<-unlist(sharing_partners)
 
   L1_edgesinCondition<-matrix(0,ncol=3,nrow=length(NodeA))
@@ -308,7 +308,7 @@ PC_one_run_para_L1<-function(data_matrix,mynet,L,method=c("CMII","CMI"),log_file
 
 callmcL0test<-function(L0_edges,data_matrix,core_num=1,permutation_times=30)
 {
-    system.time(result_para<-unlist(mclapply(1:nrow(L0_edges),function(x){MI(X=data_matrix[L0_edges[x,1],],Y=data_matrix[L0_edges[x,2],],unit="normalized",pvalue=TRUE,permutation_times=permutation_times)}, mc.cores = core_num)))
+    system.time(result_para<-unlist(mclapply(seq_len(nrow(L0_edges)),function(x){MI(X=data_matrix[L0_edges[x,1],],Y=data_matrix[L0_edges[x,2],],unit="normalized",pvalue=TRUE,permutation_times=permutation_times)}, mc.cores = core_num)))
     result<-matrix(result_para,ncol=7,nrow=length(result_para)/7,byrow=TRUE)
     colnames(result)<-names(result_para[1:7])
     #rownames(result)<-rownames(L0_edges)
@@ -323,7 +323,7 @@ callmcL0test<-function(L0_edges,data_matrix,core_num=1,permutation_times=30)
 
 callmcL1test<-function(L1_edges,data_matrix,core_num=1,permutation_times=30)
 {
-    system.time(result_para<-unlist(mclapply(1:nrow(L1_edges),function(x){CMI(X=data_matrix[L1_edges[x,1],],Y=data_matrix[L1_edges[x,2],],Z=data_matrix[L1_edges[x,3],],unit="normalized",pvalue=TRUE,permutation_times=permutation_times)}, mc.cores = core_num)))
+    system.time(result_para<-unlist(mclapply(seq_len(nrow(L1_edges)),function(x){CMI(X=data_matrix[L1_edges[x,1],],Y=data_matrix[L1_edges[x,2],],Z=data_matrix[L1_edges[x,3],],unit="normalized",pvalue=TRUE,permutation_times=permutation_times)}, mc.cores = core_num)))
     result<-matrix(result_para,ncol=8,nrow=length(result_para)/8,byrow=TRUE)
     colnames(result)<-names(result_para[1:8])
     return(result[,c("nor_CMI_value","median_of_test","adj.pvalue")])

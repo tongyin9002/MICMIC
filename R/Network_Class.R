@@ -31,11 +31,13 @@ Network<-setClass("Network",slots=
 #'
 #' This function is to Create a method to read genes annotation data
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @param adj_matrix, an adjacent matrix to load
 #' @return the new object loaded with adjacent matrix
 #' @import methods
 #' @importFrom utils object.size
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("read_adj_matrix",function(object,adj_matrix) standardGeneric("read_adj_matrix"))
 #' @aliases read_adj_matrix
@@ -116,10 +118,12 @@ setMethod("read_adj_matrix","Network",function(object,adj_matrix){
 #'
 #' This function is to Create a method to get partners for any vertex
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @param vertex, a vector that store the names of nodes
 #' @import methods
 #' @return a vector of partners
+#' @keywords internal
 #' @author Tong Yin
 
 setGeneric("get_partners",function(object,vertex) standardGeneric("get_partners"))
@@ -142,11 +146,13 @@ setMethod("get_partners","Network",function(object,vertex){
 #'
 #' This function is to Create a method to get sharing partners for vertex
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @param vertex1, vector that store the name of the first node
 #' @param vertex2, vector that store the name of the secode node
 #' @return a vector of partners
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("get_sharing_partners",function(object,vertex1,vertex2) standardGeneric("get_sharing_partners"))
 #' @aliases get_sharing_partners
@@ -172,10 +178,12 @@ setMethod("get_sharing_partners","Network",function(object,vertex1,vertex2){
 #'
 #' This function is to Create a method to delete edges
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @param vertex_pairs, numeric matrix that store the pairs of vertexs
 #' @return a new object that store the network which deleted edges
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("delete_edge",function(object,vertex_pairs) standardGeneric("delete_edge"))
 #' @aliases delete_edge
@@ -219,10 +227,12 @@ setMethod("delete_edge","Network",function(object,vertex_pairs){
 #'
 #' This function is to Create a method to add edges
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @param vertex_pairs, numeric matrix that store the pairs of vertexs
 #' @return a new object that store the network which added edges
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("add_edge",function(object,vertex_pairs) standardGeneric("add_edge"))
 #' @aliases add_edge
@@ -269,9 +279,11 @@ setMethod("add_edge","Network",function(object,vertex_pairs){
 #'
 #' This function is to Create a method to update edge data from object
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @return a new object that store the network which added edges
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("update_edge",function(object) standardGeneric("update_edge"))
 #' @aliases update_edge
@@ -301,10 +313,12 @@ setMethod("update_edge","Network",function(object){
 #'
 #' This function is to test whether the nodes in the input edges are in the network or not
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @param vertex_pairs, numeric matrix that store the pairs of vertexs
 #' @return testing information
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("test_vertex_pairs",function(object,vertex_pairs) standardGeneric("test_vertex_pairs"))
 #' @aliases test_vertex_pairs
@@ -353,9 +367,11 @@ setMethod("test_vertex_pairs","Network",function(object,vertex_pairs){
 #'
 #' This function is to get number of vertexs
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @return number
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("get_vertex_number",function(object) standardGeneric("get_vertex_number"))
 #' @aliases get_vertex_number
@@ -374,9 +390,11 @@ setMethod("get_vertex_number","Network",function(object){
 #'
 #' This function is to get number of edges
 #' @docType methods
+#' @rdname Network
 #' @param object, Object of class Network.
 #' @return number
 #' @import methods
+#' @keywords internal
 #' @author Tong Yin
 setGeneric("get_edge_number",function(object) standardGeneric("get_edge_number"))
 #' @aliases get_edge_number

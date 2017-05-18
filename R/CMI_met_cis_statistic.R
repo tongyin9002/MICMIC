@@ -3,12 +3,12 @@
 #' generate_regulator_info
 #'
 #' This function is to integrate the regulator information in the gene_regulator_info.txt file
-#' @param met_data_matrix a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)
-#' @param exp_data_matrix a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)
+#' @param met_data_matrix a SummarizedExperiment object or a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)
+#' @param exp_data_matrix a SummarizedExperiment object or a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)
 #' @param gene_list a vector containing the names of target genes
 #' @param outfiledir a string of file directory to store the result files. If the parameter is not specified, the log file directory will be get by \code{getwd()}.
-#' @param ref_gene_bed a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.
-#' @param ref_CpGs_bed a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.
+#' @param ref_gene_bed a GRanges object or a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.
+#' @param ref_CpGs_bed a GRanges object or a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.
 #' @usage generate_regulator_info(met_data_matrix,exp_data_matrix,gene_list,
 #' outfiledir=NA,ref_gene_bed,ref_CpGs_bed)
 #' @return data.frame containing information of direct and indirect regulators
@@ -28,6 +28,7 @@
 #' exp_data_matrix=STAD_exp_data_matrix,gene_list=gene_name,
 #' ref_gene_bed=STAD_ref_gene_bed,ref_CpGs_bed=STAD_ref_CpGs_bed)
 #' }
+#' @seealso the usage of CMI_met_cis_network
 
 
 generate_regulator_info<-function(met_data_matrix,exp_data_matrix,gene_list,outfiledir=NA,ref_gene_bed,ref_CpGs_bed)
@@ -39,13 +40,46 @@ generate_regulator_info<-function(met_data_matrix,exp_data_matrix,gene_list,outf
         outfiledir<-getwd()
     }
 
+    if(class(met_data_matrix)=="SummarizedExperiment")
+    {
+        met_data_matrix<-assay(met_data_matrix)
+    }
+
+    if(class(exp_data_matrix)=="SummarizedExperiment")
+    {
+        exp_data_matrix<-assay(exp_data_matrix)
+    }
+
+    if(class(ref_gene_bed)=="GRanges")
+    {
+        ref_gene_bed<-data.frame(as.vector(seqnames(ref_gene_bed)),
+                                 start(ranges(ref_gene_bed)),
+                                 end(ranges(ref_gene_bed)),
+                                 as.vector(strand(ref_gene_bed)),
+                                 names(ref_gene_bed),
+                                 width(ranges(ref_gene_bed)))
+        colnames(ref_gene_bed)<-c("chr","start","end","strand","name","length")
+        rownames(ref_gene_bed)<-ref_gene_bed[,"name"]
+    }
+    if(class(ref_CpGs_bed)=="GRanges")
+    {
+        ref_CpGs_bed<-data.frame(names(ref_CpGs_bed),
+                                 as.vector(seqnames(ref_CpGs_bed)),
+                                 start(ranges(ref_CpGs_bed)),
+                                 end(ranges(ref_CpGs_bed))
+        )
+        colnames(ref_CpGs_bed)<-c("name","chr","start","end")
+        rownames(ref_CpGs_bed)<-ref_CpGs_bed[,"name"]
+    }
+
+
     ref_gene_list<-ref_gene_bed[,"name"]
     ref_CpGs_list<-ref_CpGs_bed[,"name"]
 
     data_matrix<-rbind(met_data_matrix,exp_data_matrix)
 
     cat("##############\n\n")
-    for(i in 1:length(gene_list))
+    for(i in seq_len(length(gene_list)))
     {
         cat("\n###Generation regulator information for ");cat(gene_list[i]);cat(" ");cat(i);cat(" in ");cat(length(gene_list));cat("\n")
 
@@ -154,7 +188,7 @@ generate_regulator_info<-function(met_data_matrix,exp_data_matrix,gene_list,outf
          pvalue<-vector()
          met_sd<-vector()
          gene_exp<-data_matrix[gene_list[i],]
-         for(j in 1:length(regulator_name))
+         for(j in seq_len(length(regulator_name)))
          {cor_result<-cor.test(data_matrix[regulator_name[j],],gene_exp,method = "pearson")
           pearson_cor<-c(pearson_cor,round(cor_result$estimate,3))
           pvalue<-c(pvalue,cor_result$p.value)
@@ -246,7 +280,7 @@ merge_regulator_info<-function(gene_list,outfiledir=NA,statisticfiledir=NA,ref_g
     direct_regulator_information<-data.frame()
     indirect_regulator_information<-data.frame()
 
-    for(i in 1:length(gene_list))
+    for(i in seq_len(length(gene_list)))
     {
         cat(i);cat("\t");cat(gene_list[i]);cat("\n");
         target_gene<-gene_list[i]
@@ -358,7 +392,7 @@ bedoverlapping<-function(mybed,target_bed)
 
     overlapping_list<-vector()
     start_num<-0
-    for(i in 1:nrow(merge_bed))
+    for(i in seq_len(nrow(merge_bed)))
     {
      if(merge_bed[i,"type"]=="targetstart")
      {
@@ -417,7 +451,7 @@ functional_annotation_for_distal_regulators<-function(gene_list,outfiledir,annot
 
     direct_regulator_annotation<-direct_regulator_bed
     indirect_regulator_annotation<-indirect_regulator_bed
-    for(i in 1:length(annotation_bed_list))
+    for(i in seq_len(length(annotation_bed_list)))
     {
         cat("Annotating ");cat(annotation_bed_names[i]);cat(".......\n")
         overlapping_list<-bedoverlapping(direct_regulator_bed,annotation_bed_list[[i]])

@@ -10,17 +10,17 @@ distance=NA,ref_gene_bed,ref_CpGs_bed,sample_class,outfiledir=NA)
 \arguments{
 \item{gene_name}{The name of target gene to be plotted}
 
-\item{met_data_matrix}{a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)}
+\item{met_data_matrix}{a SummarizedExperiment object or a numeric matrix containing CpGs methylation data where columns contain samples and rows contain variables(probe site)}
 
-\item{exp_data_matrix}{a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)}
+\item{exp_data_matrix}{a SummarizedExperiment object or a numeric matrix containing gene expression data where columns contain samples and rows contain variables(gene site)}
 
 \item{control_id}{a vector containing the ids of control/normal samples}
 
 \item{distance}{Integer specifying the upstream/downstream genome range to be plotted. By default distance will cover all CpGs in analysis result}
 
-\item{ref_gene_bed}{a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
+\item{ref_gene_bed}{a GRanges object or a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
 
-\item{ref_CpGs_bed}{a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
+\item{ref_CpGs_bed}{a GRanges object or a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
 
 \item{sample_class}{a data.frame containing the class information for samples}
 
@@ -41,6 +41,9 @@ exp_data_matrix=STAD_exp_data_matrix,control_id=STAD_control_id,
 distance=350000,ref_gene_bed=STAD_ref_gene_bed,
 ref_CpGs_bed=STAD_ref_CpGs_bed,sample_class=sample_class)
 }
+}
+\seealso{
+the usage of CMI_met_cis_network
 }
 \author{
 Tong Yin
