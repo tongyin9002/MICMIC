@@ -19,6 +19,10 @@ outfiledir=NA,ref_gene_bed,ref_CpGs_bed)
 \item{ref_gene_bed}{a GRanges object or a data.frame containing reference gene coorinate with five columns named "name", "chr", "start", "end" and "strand". The coordinates of genes in exp_data_matrix are required to be included in this data.frame.}
 
 \item{ref_CpGs_bed}{a GRanges object or a data.frame containing reference CpGS coorinate with four columns names "name", "chr", "start" and "end". The coordinates of CpGs/probes in met_data_matrix are required to be included in this data.frame.}
+
+\item{promoter_upstrm}{a distance number, define the promoter region that in upstream to TSS}
+
+\item{promoter_dwstrm}{a distance number, define the promoter region that in downstream to TSS}
 }
 \value{
 data.frame containing information of direct and indirect regulators

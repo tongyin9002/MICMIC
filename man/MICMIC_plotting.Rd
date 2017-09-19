@@ -25,6 +25,8 @@ distance=NA,ref_gene_bed,ref_CpGs_bed,sample_class,outfiledir=NA)
 \item{sample_class}{a data.frame containing the class information for samples}
 
 \item{outfiledir}{a string of file directory to store the result files. If the parameter is not specified, the log file directory will be get by \code{getwd()}.}
+
+\item{network}{plot the direct regulator network or the whole network}
 }
 \value{
 a ggplot object

@@ -27,6 +27,8 @@ ref_gene_bed,ref_CpGs_bed,outfiledir=NA,pvalue_cut=0.001,core_num=1,permutation_
 \item{core_num}{the cpu number using for parallel computation in PC_para}
 
 \item{permutation_times}{the number of times of permutation to calculate the pvalue}
+
+\item{MI_cut}{the mutual information cut off to filter the direct regulator}
 }
 \value{
 the adjacency matrix of the network with value of 0 and 1. 1 means that there is an edge between the rowname and colname of the element.
