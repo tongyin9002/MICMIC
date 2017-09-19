@@ -23,6 +23,7 @@ Cancer, a complex and fatal disease, is the result of combined genetic and epige
 
 The major feature of MICMIC is to infer the methylation involved regulation network for target genes, and discover the direct regulators influencing target genes expression. This work can be done by four functions: `CMI_met_cis_network` for network inference, `generate_regulator_info` for generating result tables, `merge_regulator_info` to summarize the results of multiple genes and `MICMIC_plotting` to visualize the result. 
 
+
 ### Data preparation
 
 The `CMI_met_cis_network` function requires user to provide 1. A SummarizedExperiment object or a numeric matrix containing the methylation data with sample names in columns and probes (CpGs/CGIs) names in rows; 2. A SummarizedExperiment object or a numeric matrix containing the expression data with sample names in columns and probe(genes) names in rows; 3. The target gene names (one gene name or list of genes); 4. The range of upstream and downstream genome to be analyzed; 5. Reference coordinates data of genes in five columns named "name", "chr", "start", "end", "strand", in a GRanges object or a data.frame; 6. Reference coordinates data of methylation sites(CpGs/CGIs) in four columns names "name", "chr", "start", "end", in a GRanges object or a data.frame; 7. A directory to save the intermediate files and outputs.
@@ -35,13 +36,14 @@ data("TCGA_HNSC_data")
 data("TCGA_STAD_data")
 ```
 
+
 ### Infer the methylation regulation network for one gene
 
 In the beginning, we can try to analyze the methylation regulation network for MLH1 in gastric cancer, using the CMI_met_cis_network function. 
 
 In this example, we use the data matrix from TCGA-STAD dataset to analyze the methylation regulation of MLH1, a well known tumor suppressor of gastric cancer. We designate the directory for result files and specify the "MLH1" as the target gene name. Then we run the program:
 
-```{r, fig.show='hold', eval = TRUE}
+```{r, fig.show='hold', eval = FALSE}
 
 library(MICMIC)
 library(SummarizedExperiment)
@@ -71,7 +73,7 @@ STAD_ref_CpGs_bed_GR <-  GRanges(seqnames = Rle(STAD_ref_CpGs_bed[,"chr"]),
 
 ####infer the cis-acting methylation regulatory network
 CMI_met_cis_network(met_data_matrix=STAD_met_data_matrix,exp_data_matrix=STAD_exp_data_matrix,
-                             gene_list=gene_name,distance=300000,ref_gene_bed=STAD_ref_gene_bed,
+                             gene_list=gene_name,distance=50000,ref_gene_bed=STAD_ref_gene_bed,
                              ref_CpGs_bed=STAD_ref_CpGs_bed,outfiledir=tempdir(),
                              pvalue_cut=0.0001,core_num=1)
 
@@ -84,7 +86,7 @@ The CMI_met_cis_network function will return the final adjacent matrix, and gene
 The associate regulation file give a list of all the associated genes and CpGs within the given range on genome. And the direct and indirect regulation file give the lists of direct and indirect regulators identified by MICMIC. The indirect regulation file will show the passenger mediating the indirect connection, which can be found in the third column. The MI and CMI network files contain the adjacent matrix after mutual information testing and conditional mutual information testing.
 
 Finally we can use the `generate_regulator_info` function to integrate all vital information in the result table: 
-```{r, fig.show='hold', eval = TRUE}
+```{r, fig.show='hold', eval = FALSE}
 ####plotting the cis-acting regulatory network####
 gene_name="MLH1"
 result<-generate_regulator_info(met_data_matrix=STAD_met_data_SE,exp_data_matrix=STAD_exp_data_SE,
@@ -112,6 +114,7 @@ MICMIC_plotting(gene_name=gene_name,met_data_matrix=STAD_met_data_SE,exp_data_ma
 ```
 
 ![Methylation regulation of MLH1](MLH1_met_regulation.png)
+
 
 In the top panel of the result figure, there are correlation lines between genes and CpGs. The gray line represent the indirect correlation and the green line represent the direct correlation. And the dark green lines are always connected with target gene in center, which indicate the direct regulators correlated with target gene expression. The correlation panel is under the chromosome number, and it use the blue and red points to represent the Pearson correlation coefficient and p-value between regulators and target gene expression. In the panel, blue point means the correlation is positive, and the red point means the correlation is negative. For MLH1, the hypermethylation on promoter CpGs inhibits gene expression, and methylation on several distal CpGs are directly correlated with PLK1 expression. In the bottom panel, the scatter plots show the methylation alteration for each CpG site, and direct and indirect CpGs are distinguished by background colors green and gray.
 
