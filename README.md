@@ -38,9 +38,8 @@ To install devtools:
 
 To install MICMIC:
 
-> devtools::install_github("tongyin9002/MICMIC")
-
-> library(MICMICC)
+download the source package, then
+> install.packages("MICMIC_0.99.6.tar.gz")
 
 
 
