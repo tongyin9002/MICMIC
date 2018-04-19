@@ -39,7 +39,7 @@ To install devtools:
 To install MICMIC:
 
 download the source package, then
-> install.packages("MICMIC_0.99.6.tar.gz")
+> install.packages("MICMIC_0.99.6.tar.gz",repos=NULL)
 
 
 
