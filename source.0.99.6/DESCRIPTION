@@ -1,7 +1,7 @@
 Package: MICMIC
 Type: Package
 Title: Methylation regulation network inference with Conditional Mutual
-    information based PC-algorithem
+    information based PC-algorithm
 Version: 0.99.6
 Author: Tong Yin
 biocViews: GeneRegulation, DNAMethylation, NetworkInference, Network
@@ -11,7 +11,7 @@ Description: MICMIC is an information theory based package to infer the
     the mutual information and conditional mutual information between continuous
     variables; 2. construct direct correlation network; 3. study the methylation
     regulation for target genes within a given range on the genome.
-License: GPL (>=3)
+License: CC-BY-4.0
 LazyData: TRUE
 Depends: R(>= 2.10.0)
 Imports:
