@@ -1,6 +1,6 @@
 ################MICMIC#############################################
 ###Copyright (C) 2006-2018 Tong Yin <tongyin9002@gmail.com>########
-###This program is released under the [GPL], version 3 or later.###
+
 
 
 

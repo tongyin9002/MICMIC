@@ -1,6 +1,6 @@
 ################MICMIC#############################################
 ###Copyright (C) 2006-2018 Tong Yin <tongyin9002@gmail.com>########
-###This program is released under the [GPL], version 3 or later.###
+
 
 
 
@@ -166,7 +166,10 @@ functional_enrichment_of_core_circuit<-function(TF_network,core_TF_clusters,func
     { core_TFs<-core_TF_clusters[core_TF_clusters[,2]==i,1]
       target_genes<-unique(TF_network[which((TF_network[,1]%in%core_TFs)),"target"])
       result<-cancerpathenrich(target_genes,function_gmt)
-      result<-data.frame(i,rownames(result),result)
+      if(nrow(result)>0)
+      {
+       result<-data.frame(i,rownames(result),result)
+      }
       myresult<-rbind(myresult,result)
     }
 

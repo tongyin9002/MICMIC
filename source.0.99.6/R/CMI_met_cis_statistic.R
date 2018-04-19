@@ -1,6 +1,6 @@
 ################MICMIC#############################################
 ###Copyright (C) 2006-2018 Tong Yin <tongyin9002@gmail.com>########
-###This program is released under the [GPL], version 3 or later.###
+
 
 
 #' generate_regulator_info
@@ -340,22 +340,18 @@ merge_regulator_info<-function(gene_list,outfiledir=NA,statisticfiledir=NA,ref_g
     ref_gene_promoter_bed<-ref_gene_promoter_bed[order(ref_gene_promoter_bed[,"chr"]),]
     #write.table(ref_gene_promoter_bed,paste(statisticfiledir,"/ref_promoter_bed.txt",sep=""),quote=FALSE,sep="\t")
 
-    cat("Annotating promoter");cat(".......\n")
+    #cat("Annotating promoter");cat(".......\n")
 
-    names<-c(colnames(direct_regulator_information),"in_promoter_region")
     overlapping_list<-bedoverlapping(direct_regulator_bed,ref_gene_promoter_bed)
-    direct_regulator_information<-cbind(direct_regulator_information,direct_regulator_information[,"regulator_name"]%in%overlapping_list)
-    colnames(direct_regulator_information)<-names
+    direct_in_promoter_region<-direct_regulator_information[,"regulator_name"]%in%overlapping_list
 
-    names<-c(colnames(indirect_regulator_information),"in_promoter_region")
     overlapping_list<-bedoverlapping(indirect_regulator_bed,ref_gene_promoter_bed)
-    indirect_regulator_information<-cbind(indirect_regulator_information,indirect_regulator_information[,"regulator_name"]%in%overlapping_list)
-    colnames(indirect_regulator_information)<-names
+    indirect_in_promoter_region<-indirect_regulator_information[,"regulator_name"]%in%overlapping_list
 
     if(distalfilter)
     {
-     direct_regulator_information<-direct_regulator_information[-which((direct_regulator_information[,"regulation_dis"]=="distal")&(direct_regulator_information[,"in_promoter_region"])),]
-     indirect_regulator_information<-indirect_regulator_information[-which((indirect_regulator_information[,"regulation_dis"]=="distal")&(indirect_regulator_information[,"in_promoter_region"])),]
+     direct_regulator_information<-direct_regulator_information[which(!((direct_regulator_information[,"regulation_dis"]=="distal")&(direct_in_promoter_region))),]
+     indirect_regulator_information<-indirect_regulator_information[which(!((indirect_regulator_information[,"regulation_dis"]=="distal")&(indirect_in_promoter_region))),]
     }
 
     write.table(direct_regulator_information,paste(statisticfiledir,"/direct_information.txt",sep=""),quote=FALSE,sep="\t")
@@ -364,12 +360,12 @@ merge_regulator_info<-function(gene_list,outfiledir=NA,statisticfiledir=NA,ref_g
     direct_target_gene<-unique(direct_regulator_information[,"target_name"])
     direct_promoter_regulator<-direct_regulator_information[which(direct_regulator_information[,"regulation_dis"]=="promoter"),"regulator_name"]
     direct_genebody_regulator<-unique(direct_regulator_information[which(direct_regulator_information[,"regulation_dis"]=="gene_body"),"regulator_name"])
-    direct_distal_regulator<-unique(direct_regulator_information[which((direct_regulator_information[,"regulation_dis"]=="distal")&(!direct_regulator_information[,"in_promoter_region"])),"regulator_name"])
+    direct_distal_regulator<-unique(direct_regulator_information[which((direct_regulator_information[,"regulation_dis"]=="distal")),"regulator_name"])
 
     indirect_target_gene<-unique(indirect_regulator_information[,"target_name"])
     indirect_promoter_regulator<-indirect_regulator_information[which(indirect_regulator_information[,"regulation_dis"]=="promoter"),"regulator_name"]
     indirect_genebody_regulator<-unique(indirect_regulator_information[which(indirect_regulator_information[,"regulation_dis"]=="gene_body"),"regulator_name"])
-    indirect_distal_regulator<-unique(indirect_regulator_information[which((indirect_regulator_information[,"regulation_dis"]=="distal")&(!indirect_regulator_information[,"in_promoter_region"])),"regulator_name"])
+    indirect_distal_regulator<-unique(indirect_regulator_information[which((indirect_regulator_information[,"regulation_dis"]=="distal")),"regulator_name"])
 
     direct_num<-c(length(direct_target_gene),length(direct_promoter_regulator),length(direct_genebody_regulator),length(direct_distal_regulator))
     indirect_num<-c(length(indirect_target_gene),length(indirect_promoter_regulator),length(indirect_genebody_regulator),length(indirect_distal_regulator))

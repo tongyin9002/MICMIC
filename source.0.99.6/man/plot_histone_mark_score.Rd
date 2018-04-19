@@ -4,7 +4,7 @@
 \alias{plot_histone_mark_score}
 \title{Plot of average histone mark score around CpGs detected by MICMIC}
 \usage{
-plot_histone_mark_score(direct_info,name,CpGs_score,colors,range,figure_dir,CpGs_annotation=NA)
+plot_histone_mark_score(direct_info,name,CpGs_score,colors,range,figure_dir)
 }
 \arguments{
 \item{direct_info}{Regulation information of CpG gene pairs detected by MICMIC.

@@ -1,6 +1,6 @@
 ################MICMIC#############################################
 ###Copyright (C) 2006-2018 Tong Yin <tongyin9002@gmail.com>########
-###This program is released under the [GPL], version 3 or later.###
+
 
 
 #' Plot of average histone mark score around CpGs detected by MICMIC
@@ -13,11 +13,11 @@
 #' @param colors The plotting colors of types of DRE
 #' @param range The plotting range (bp) around the CpG site.
 #' @param figure_dir The output directory.
-#' @usage plot_histone_mark_score(direct_info,name,CpGs_score,colors,range,figure_dir,CpGs_annotation=NA)
+#' @usage plot_histone_mark_score(direct_info,name,CpGs_score,colors,range,figure_dir)
 #' @return A plotting result would be saved in the output directory to a file named by the histone mark.
 #' @export
 
-plot_histone_mark_score<-function(direct_info,name,CpGs_score,colors,range,figure_dir,CpGs_annotation)
+plot_histone_mark_score<-function(direct_info,name,CpGs_score,colors,range,figure_dir,CpGs_annotation=NA)
 {   options(stringsAsFactors = FALSE)
     if(!is.na(CpGs_annotation))
     {

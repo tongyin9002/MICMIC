@@ -241,17 +241,17 @@ direct_info$type[which(direct_info[,"pearson_cor"]<0)]<-"negative"
 mycolors<-c("control"="grey","positive"="blue","negative"="red")
 name="H3K4me1"
 CpGs_score<-CpGs_score_H3K4me1
-plot_histone_mark_score(direct_info,CpGs_annotation,name,CpGs_score,
+plot_histone_mark_score(direct_info,name,CpGs_score,
                         colors=mycolors,
-                        range=3000,figure_dir=summarydir)
+                        range=3000,figure_dir=summarydir,CpGs_annotation)
     
 mycolors<-c("control"="grey","positive"="blue","negative"="red")
 name="p300"
 CpGs_score<-CpGs_score_p300
 range<-3000
-plot_histone_mark_score(direct_info,CpGs_annotation,name,CpGs_score,
+plot_histone_mark_score(direct_info,name,CpGs_score,
                         colors=mycolors,
-                        range=3000,figure_dir=summarydir)
+                        range=3000,figure_dir=summarydir,CpGs_annotation)
 
 ```
 
