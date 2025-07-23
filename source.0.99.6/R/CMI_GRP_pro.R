@@ -32,7 +32,7 @@
 #' c=b-rnorm(300,mean=0,sd=2)
 #' mydata<-rbind(x,y,w,v,z,a,b,c)
 #' MI_PC_net<-PC_para(mydata,max_L=0,log_file_dir=tempdir())
-#' CMI_PC_net<-PC_para(mydata,max_L=1,method="CMI"log_file_dir=tempdir())
+#' CMI_PC_net<-PC_para(mydata,max_L=1,method="CMI",log_file_dir=tempdir())
 #' @author Tong Yin
 #' @references
 #' Zhang, X. (2011). Inferring gene regulatory networkds from gene expression data by path consistency algorithm based on conditional mutual information

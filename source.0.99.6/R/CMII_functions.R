@@ -433,7 +433,7 @@ continuous_joint_entropy<-function(den_func_xy,lowerlimit,upperlimit,method=c("t
     entropy<-adaptIntegrate(integrand,lowerLimit<-c(minx,miny), upperLimit<-c(maxx,maxy), tol=1e-3)$integral
   }
   entropy<-(0-entropy)
-  if(unit == "units")
+  if(unit == "bits")
   {
     entropy<-entropy/log(2)
   }
@@ -465,13 +465,20 @@ CMI.ZhangXJ<-function(X,Y,Z,unit=c("bits","nats","hartley","normalized"),pvalue=
   C_Z<-cov(Z_m)
   C_XYZ<-cov(XYZ)
 
-  value<-((det(C_XZ)*det(C_YZ))/(det(C_Z)*det(C_XYZ)))
-  if(value<=0)
+  denominator <- det(C_Z)*det(C_XYZ)
+  if(denominator == 0)
   {
     CMI_value <- 0
   }else
   {
-    CMI_value<-0.5*log(value)
+    value<-((det(C_XZ)*det(C_YZ))/denominator)
+    if(value<=0)
+    {
+      CMI_value <- 0
+    }else
+    {
+      CMI_value<-0.5*log(value)
+    }
   }
 
 
@@ -505,16 +512,29 @@ CMI.ZhangXJ<-function(X,Y,Z,unit=c("bits","nats","hartley","normalized"),pvalue=
     XYZ<-as.matrix(cbind(orderX,Y,Z))
     C_XZ<-cov(XZ)
     C_XYZ<-cov(XYZ)
-    value<-((det(C_XZ)*det(C_YZ))/(det(C_Z)*det(C_XYZ)))
-    if(value<=0)
+    denominator_max <- det(C_Z)*det(C_XYZ)
+    if(denominator_max == 0)
     {
       max_CMI_value <- 0
     }else
     {
-      max_CMI_value<-0.5*log(value)
+      value<-((det(C_XZ)*det(C_YZ))/denominator_max)
+      if(value<=0)
+      {
+        max_CMI_value <- 0
+      }else
+      {
+        max_CMI_value<-0.5*log(value)
+      }
     }
 
-    nor_CMI_value<-CMI_value/max_CMI_value
+    if(max_CMI_value == 0)
+    {
+      nor_CMI_value <- 0
+    }else
+    {
+      nor_CMI_value<-CMI_value/max_CMI_value
+    }
 
     if(nor_CMI_value==Inf)
     {
